@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Link } from 'src/app/shared/models/link';
 import { User } from 'src/app/shared/models/user';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -24,10 +24,12 @@ export class NavigationComponent {
   links: Link[] = [];
   actions: Link[] = [];
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Web)
     .pipe(
+      tap(result => console.log(result)),
       map(result => result.matches)
     );
+
 
   user: User;
 

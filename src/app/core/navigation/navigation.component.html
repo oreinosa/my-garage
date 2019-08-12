@@ -2,35 +2,107 @@
   <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="sidenav.toggle()">
     <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
   </button>
-  <span class='ml-2'>{{appName}}</span>
-  <span class="spacer"></span>
-  <ng-container *ngFor='let action of actions'>
-    <ng-container *ngIf='!!action?.children;else singleAction'>
-      <button type='button' mat-icon-button [matTooltip]='action?.label' [matMenuTriggerFor]="menu">
-        <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu">
-        <button type='button' mat-menu-item *ngFor='let childAction of action?.children'
-          [routerLink]='[action.route,childAction.route]'>
-          <mat-icon *ngIf='childAction?.icon'>{{ childAction.icon }}</mat-icon>
-          {{ childAction?.label }}
+  <span class='mx-2'>{{appName}}</span>
+  <!-- LINKS AND ACTIONS FOR MOBILE -->
+  <ng-container *ngIf='!(isHandset$ | async);else tempForWeb'>
+    <ng-container *ngFor='let action of links'>
+      <ng-container *ngIf='!!action?.children;else singleAction'>
+        <button type='button' mat-icon-button [matTooltip]='action?.label' [matMenuTriggerFor]="menu">
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
         </button>
-      </mat-menu>
+        <mat-menu #menu="matMenu">
+          <button type='button' mat-menu-item *ngFor='let childAction of action?.children'
+            [routerLink]='[action.route,childAction.route]'>
+            <mat-icon *ngIf='childAction?.icon'>{{ childAction.icon }}</mat-icon>
+            {{ childAction?.label }}
+          </button>
+        </mat-menu>
+      </ng-container>
+      <ng-template #singleAction>
+        <button type='button' mat-icon-button [matTooltip]='action?.label' [routerLink]='action.route'>
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
+        </button>
+      </ng-template>
     </ng-container>
-    <ng-template #singleAction>
-      <button type='button' mat-icon-button [matTooltip]='action?.label' [routerLink]='action.route'>
-        <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
-      </button>
-    </ng-template>
+    <span class="spacer"></span>
+    <!-- ACTIONS FOR MOBILE -->
+    <ng-container *ngFor='let action of actions'>
+      <ng-container *ngIf='!!action?.children;else singleAction'>
+        <button type='button' mat-icon-button [matTooltip]='action?.label' [matMenuTriggerFor]="menu">
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button type='button' mat-menu-item *ngFor='let childAction of action?.children'
+            [routerLink]='[action.route,childAction.route]'>
+            <mat-icon *ngIf='childAction?.icon'>{{ childAction.icon }}</mat-icon>
+            {{ childAction?.label }}
+          </button>
+        </mat-menu>
+      </ng-container>
+      <ng-template #singleAction>
+        <button type='button' mat-icon-button [matTooltip]='action?.label' [routerLink]='action.route'>
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
+        </button>
+      </ng-template>
+    </ng-container>
   </ng-container>
-  <button *ngIf='!!user' type='button' mat-icon-button matTooltip='Profile' routerLink='/profile'>
+  <!-- LINKS AND ACTIONS FOR WEB -->
+  <ng-template #tempForWeb>
+    <!-- LINKS FOR WEB -->
+    <ng-container *ngFor='let action of links'>
+      <ng-container *ngIf='!!action?.children;else singleAction'>
+        <button type='button' mat-button [matMenuTriggerFor]="menu">
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
+          {{ action.label }}
+        </button>
+        <mat-menu #menu="matMenu">
+          <button type='button' mat-menu-item *ngFor='let childAction of action?.children'
+            [routerLink]='[action.route,childAction.route]'>
+            <mat-icon *ngIf='childAction?.icon'>{{ childAction.icon }}</mat-icon>
+            {{ childAction?.label }}
+          </button>
+        </mat-menu>
+      </ng-container>
+      <ng-template #singleAction>
+        <button type='button' mat-button [routerLink]='action.route'>
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
+          {{ action.label }}
+        </button>
+      </ng-template>
+    </ng-container>
+    <span class="spacer"></span>
+    <!-- ACTIONS FOR WEB -->
+    <ng-container *ngFor='let action of actions'>
+      <ng-container *ngIf='!!action?.children;else singleAction'>
+        <button type='button' mat-button [matMenuTriggerFor]="menu">
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
+          {{ action.label }}
+        </button>
+        <mat-menu #menu="matMenu">
+          <button type='button' mat-menu-item *ngFor='let childAction of action?.children'
+            [routerLink]='[action.route,childAction.route]'>
+            <mat-icon *ngIf='childAction?.icon'>{{ childAction.icon }}</mat-icon>
+            {{ childAction?.label }}
+          </button>
+        </mat-menu>
+      </ng-container>
+      <ng-template #singleAction>
+        <button type='button' mat-button [routerLink]='action.route'>
+          <mat-icon *ngIf='action?.icon'>{{ action.icon }}</mat-icon>
+          {{ action.label }}
+        </button>
+      </ng-template>
+    </ng-container>
+  </ng-template>
+
+  <!-- <button *ngIf='!!user?.id' type='button' mat-icon-button matTooltip='Profile' routerLink='/profile'>
     <mat-icon>person</mat-icon>
-  </button>
+  </button> -->
 </mat-toolbar>
 
 <mat-sidenav-container class="example-container">
-  <mat-sidenav #sidenav mode="side" opened class="example-sidenav" [fixedInViewport]="false" fixedTopGap="0"
-    fixedBottomGap="0">
+  <mat-sidenav #sidenav [mode]="options.mode" [opened]='options.opened' class="example-sidenav" [fixedInViewport]="options.fixed" [fixedTopGap]="options.top"
+    [fixedBottomGap]="options.bottom">
     <app-avatar [user]='user'></app-avatar>
     <mat-nav-list>
       <!-- ACTIONS  -->
